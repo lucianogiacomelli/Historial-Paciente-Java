@@ -1,4 +1,4 @@
-package com.example.demo.Configuration;
+package com.example.demo.Configuration.Auth0;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

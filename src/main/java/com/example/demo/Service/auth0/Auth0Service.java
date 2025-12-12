@@ -1,9 +1,11 @@
 package com.example.demo.Service.auth0;
 
-import com.example.demo.Configuration.Auth0Properties;
+import com.example.demo.Configuration.Auth0.Auth0Properties;
 import com.example.demo.DTOs.Request.Auth0UserDTO;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.*;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.client.HttpClientErrorException;
@@ -18,6 +20,7 @@ public class Auth0Service implements IAuth0Service {
 
     private final Auth0Properties auth0Properties;
     private final RestTemplate restTemplate;
+
 
     // =======================================
     // OBTENER TOKEN DEL MANAGEMENT API
@@ -132,5 +135,38 @@ public class Auth0Service implements IAuth0Service {
         } catch (HttpClientErrorException e) {
             throw new RuntimeException("Error al obtener usuario de Auth0: " + e.getResponseBodyAsString(), e);
         }
+    }
+
+    @Override
+    public void eliminarUsuario(String auth0UserId) throws Exception {
+        String url = "https://" + auth0Properties.getDomain() + "/api/v2/users/" + auth0UserId;
+
+        Map<String, Object> body = new HashMap<>();
+        body.put("blocked", true);
+        body.put("app_metadata", Map.of("activo", false));
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(obtenerManagementToken());
+        HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, headers);
+
+        restTemplate.exchange(url, HttpMethod.PATCH, request, String.class);
+    }
+
+    @Override
+    public void habilitarUsuario(String auth0UserId) throws Exception {
+        String url = "https://" + auth0Properties.getDomain() + "/api/v2/users/" + auth0UserId;
+
+        Map<String, Object> body = new HashMap<>();
+        body.put("blocked", false);
+        body.put("app_metadata", Map.of("activo", true));
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(obtenerManagementToken());
+
+        HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, headers);
+
+        restTemplate.exchange(url, HttpMethod.PATCH, request, String.class);
     }
 }

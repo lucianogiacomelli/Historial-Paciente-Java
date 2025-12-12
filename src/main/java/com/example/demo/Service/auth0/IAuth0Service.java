@@ -8,4 +8,8 @@ public interface IAuth0Service {
     void asignarRolAUsuario(String auth0UserId, String roleId);
 
     Auth0UserDTO obtenerUsuarioPorId(String auth0UserId);
+
+    void eliminarUsuario(String auth0UserId) throws Exception;
+
+    void habilitarUsuario(String auth0UserId) throws Exception;
 }

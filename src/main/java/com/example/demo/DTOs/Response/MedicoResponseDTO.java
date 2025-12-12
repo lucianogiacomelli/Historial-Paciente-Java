@@ -15,6 +15,7 @@ public class MedicoResponseDTO {
     private String apellido;
     private String email;
     private String matricula;
+    private Boolean estado;
     private List<String> especialidades;
 }
 

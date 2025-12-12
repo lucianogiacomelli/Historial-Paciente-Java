@@ -12,6 +12,7 @@ public class MedicoMapper {
                 medico.getApellido(),
                 medico.getEmail(),
                 medico.getMatricula(),
+                medico.getEstado(),
                 medico.getEspecialidades()
                         .stream()
                         .map(Especialidad::getNombre)

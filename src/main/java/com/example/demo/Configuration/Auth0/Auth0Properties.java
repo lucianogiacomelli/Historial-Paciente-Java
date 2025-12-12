@@ -1,4 +1,4 @@
-package com.example.demo.Configuration;
+package com.example.demo.Configuration.Auth0;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -21,4 +21,6 @@ public class Auth0Properties {
     private String roleAdmin;
     private String roleMedico;
     private String roleRecepcionista;
+
+    private String managementToken;
 }
