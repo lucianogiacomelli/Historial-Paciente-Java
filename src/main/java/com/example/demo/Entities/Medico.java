@@ -18,11 +18,14 @@ import java.util.List;
 public class Medico extends Base{
     private String nombre;
     private String apellido;
+    @Column(unique = true, nullable = false)
     private String matricula;
     private String telefono;
     private String email;
+    @Column(unique = true, nullable = false)
     private String dni;
-
+    @Column(name = "auth0_user_id", unique = true, nullable = false)
+    private String auth0Id;
     @ManyToMany
     @JoinTable(
             name = "medico_especialidad",

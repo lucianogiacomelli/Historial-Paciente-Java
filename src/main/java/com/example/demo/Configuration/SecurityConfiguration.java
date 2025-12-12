@@ -7,6 +7,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
 import org.springframework.security.oauth2.core.OAuth2TokenValidator;
 import org.springframework.security.oauth2.jwt.*;
@@ -18,6 +19,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
+import java.util.Collection;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
@@ -92,13 +94,22 @@ public class SecurityConfiguration {
     @Bean
     JwtAuthenticationConverter jwtAuthenticationConverter() {
         JwtGrantedAuthoritiesConverter converter = new JwtGrantedAuthoritiesConverter();
-        converter.setAuthoritiesClaimName("https://pacientes.com/roles");
-        converter.setAuthorityPrefix("ROLE_");
+        converter.setAuthoritiesClaimName("https://api.pacientes/roles");
+        converter.setAuthorityPrefix("");
 
         JwtAuthenticationConverter jwtConverter = new JwtAuthenticationConverter();
-        jwtConverter.setJwtGrantedAuthoritiesConverter(converter);
+
+        // Wrapper para imprimir los roles
+        jwtConverter.setJwtGrantedAuthoritiesConverter(jwt -> {
+            Collection<GrantedAuthority> authorities = converter.convert(jwt);
+            System.out.println("JWT Claims: " + jwt.getClaims()); // imprime todos los claims
+            System.out.println("Authorities detected by Spring: " + authorities); // imprime roles convertidos
+            return authorities;
+        });
+
         return jwtConverter;
     }
+
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {

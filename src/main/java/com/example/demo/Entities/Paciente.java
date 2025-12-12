@@ -19,7 +19,8 @@ public class Paciente extends Base{
     private String apellido;
     private String dni;
     private LocalDate fechaNacimiento;
-    private String genero;
+    @Enumerated(EnumType.STRING)
+    private Genero genero;
     private String numero;
     private String email;
     private String direccion;
