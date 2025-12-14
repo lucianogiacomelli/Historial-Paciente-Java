@@ -1,4 +1,4 @@
-package com.example.demo.Service;
+package com.example.demo.Service.Interface;
 
 import com.example.demo.DTOs.Request.EspecialidadDTO;
 import com.example.demo.Entities.Especialidad;

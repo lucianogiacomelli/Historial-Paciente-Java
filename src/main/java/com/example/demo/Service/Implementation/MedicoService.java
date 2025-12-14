@@ -1,4 +1,4 @@
-package com.example.demo.Service;
+package com.example.demo.Service.Implementation;
 
 import com.example.demo.Configuration.Auth0.Auth0Properties;
 import com.example.demo.DTOs.Request.MedicoDTO;
@@ -7,6 +7,7 @@ import com.example.demo.Entities.Especialidad;
 import com.example.demo.Entities.Medico;
 import com.example.demo.Repository.EspecialidadRepository;
 import com.example.demo.Repository.MedicoRepository;
+import com.example.demo.Service.Interface.IMedicoService;
 import com.example.demo.Service.auth0.Auth0Service;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +17,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class MedicoService implements IMedicoService{
+public class MedicoService implements IMedicoService {
 
     private MedicoRepository medicoRepository;
     private Auth0Service auth0Service;

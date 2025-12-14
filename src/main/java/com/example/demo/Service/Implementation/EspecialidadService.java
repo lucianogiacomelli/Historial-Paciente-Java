@@ -1,8 +1,9 @@
-package com.example.demo.Service;
+package com.example.demo.Service.Implementation;
 
 import com.example.demo.DTOs.Request.EspecialidadDTO;
 import com.example.demo.Entities.Especialidad;
 import com.example.demo.Repository.EspecialidadRepository;
+import com.example.demo.Service.Interface.IEspecialidadService;
 import org.springframework.stereotype.Service;
 
 @Service

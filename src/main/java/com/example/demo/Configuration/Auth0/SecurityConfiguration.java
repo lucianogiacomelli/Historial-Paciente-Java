@@ -51,6 +51,7 @@ public class SecurityConfiguration {
                                 .requestMatchers("/api/admin/**").hasAuthority("administrador")
                                 .requestMatchers("/api/medico/**").hasAuthority("medico")
                                 .requestMatchers("/api/recepcionista/**").hasAuthority("recepcionista")
+                                .requestMatchers("/api/pacientes/**").hasAnyAuthority("administrador", "medico")
                                 .anyRequest().authenticated()
                 )
                 .oauth2ResourceServer(oauth2ResourceServer ->

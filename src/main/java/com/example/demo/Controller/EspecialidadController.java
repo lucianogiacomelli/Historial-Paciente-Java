@@ -4,7 +4,7 @@ import com.example.demo.DTOs.Request.EspecialidadDTO;
 import com.example.demo.DTOs.Response.EspecialidadResponseDTO;
 import com.example.demo.Entities.Especialidad;
 import com.example.demo.Mapper.EspecialidadMapper;
-import com.example.demo.Service.IEspecialidadService;
+import com.example.demo.Service.Interface.IEspecialidadService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
