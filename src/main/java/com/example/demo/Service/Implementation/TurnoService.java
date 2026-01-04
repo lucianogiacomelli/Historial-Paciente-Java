@@ -8,9 +8,12 @@ import com.example.demo.Repository.MedicoRepository;
 import com.example.demo.Repository.PacienteRepository;
 import com.example.demo.Repository.TurnoRepository;
 import com.example.demo.Service.Interface.ITurnoService;
+import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+
+@Service
 public class TurnoService implements ITurnoService {
 
     private TurnoRepository turnoRepository;
@@ -40,5 +43,7 @@ public class TurnoService implements ITurnoService {
 
         return null;
     }
+
+
 
 }

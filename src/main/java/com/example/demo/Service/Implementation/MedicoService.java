@@ -114,7 +114,7 @@ public class MedicoService implements IMedicoService {
         try {
             auth0Service.eliminarUsuario(medico.getAuth0Id());
         } catch (Exception e) {
-            throw new Auth0OperationException("No se pudo eliminar al médico en Auth0: " + e.getMessage());
+            throw new Auth0OperationException("No se pudo eliminar al médico en Auth0.", e);
         }
         medico.setEstado(false);
         medico.setFechaBaja(LocalDateTime.now());
@@ -130,7 +130,7 @@ public class MedicoService implements IMedicoService {
         try {
             auth0Service.habilitarUsuario(medico.getAuth0Id());
         } catch (Exception e) {
-            throw new Auth0OperationException("No se pudo habilitar al médico en Auth0: " + e.getMessage());
+            throw new Auth0OperationException("No se pudo habilitar al médico en Auth0.", e);
         }
         medico.setEstado(true);
         medico.setFechaBaja(null);

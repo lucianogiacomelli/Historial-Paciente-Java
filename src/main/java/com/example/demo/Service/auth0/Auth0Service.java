@@ -2,11 +2,13 @@ package com.example.demo.Service.auth0;
 
 import com.example.demo.Configuration.Auth0.Auth0Properties;
 import com.example.demo.DTOs.Request.Auth0UserDTO;
+import com.example.demo.Exception.Auth0OperationException;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.*;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.client.HttpClientErrorException;
 
@@ -138,23 +140,30 @@ public class Auth0Service implements IAuth0Service {
     }
 
     @Override
-    public void eliminarUsuario(String auth0UserId) throws Exception {
-        String url = "https://" + auth0Properties.getDomain() + "/api/v2/users/" + auth0UserId;
+    public void eliminarUsuario(String auth0UserId) {
+        try {
+            String url = "https://" + auth0Properties.getDomain() + "/api/v2/users/" + auth0UserId;
 
-        Map<String, Object> body = new HashMap<>();
-        body.put("blocked", true);
-        body.put("app_metadata", Map.of("activo", false));
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.setBearerAuth(obtenerManagementToken());
-        HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, headers);
+            Map<String, Object> body = new HashMap<>();
+            body.put("blocked", true);
+            body.put("app_metadata", Map.of("activo", false));
 
-        restTemplate.exchange(url, HttpMethod.PATCH, request, String.class);
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            headers.setBearerAuth(obtenerManagementToken());
+            HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, headers);
+
+            restTemplate.exchange(url, HttpMethod.PATCH, request, String.class);
+        } catch (RestClientException e) {
+            throw new Auth0OperationException(
+                    "Error al eliminar usuario en Auth0 ", e);
+        }
     }
 
     @Override
-    public void habilitarUsuario(String auth0UserId) throws Exception {
+    public void habilitarUsuario(String auth0UserId) {
+        try {
         String url = "https://" + auth0Properties.getDomain() + "/api/v2/users/" + auth0UserId;
 
         Map<String, Object> body = new HashMap<>();
@@ -168,5 +177,9 @@ public class Auth0Service implements IAuth0Service {
         HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, headers);
 
         restTemplate.exchange(url, HttpMethod.PATCH, request, String.class);
+        } catch (RestClientException e) {
+            throw new Auth0OperationException(
+                    "Error al habilitar usuario en Auth0 ", e);
+        }
     }
 }

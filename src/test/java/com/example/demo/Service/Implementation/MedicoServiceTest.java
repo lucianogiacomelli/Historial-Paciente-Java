@@ -4,6 +4,7 @@ import com.example.demo.Configuration.Auth0.Auth0Properties;
 import com.example.demo.DTOs.Request.MedicoDTO;
 import com.example.demo.Entities.Especialidad;
 import com.example.demo.Entities.Medico;
+import com.example.demo.Exception.Auth0OperationException;
 import com.example.demo.Exception.Especialidad.EspecialidadNotFoundException;
 import com.example.demo.Exception.Medico.MedicoDuplicadoException;
 import com.example.demo.Exception.Medico.MedicoNotFoundException;
@@ -21,8 +22,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class MedicoServiceTest {
@@ -158,6 +158,25 @@ class MedicoServiceTest {
 
         assertTrue(result);
     }
+
+    @Test
+    void bajaMedico_errorAuth0_lanzaExcepcion() {
+        Medico medico = new Medico();
+        medico.setId(1L);
+        medico.setAuth0Id("auth0-id");
+
+        when(medicoRepository.findById(1L))
+                .thenReturn(Optional.of(medico));
+
+        doThrow(new RuntimeException("Auth0 error"))
+                .when(auth0Service).eliminarUsuario("auth0-id");
+
+        assertThrows(
+                Auth0OperationException.class,
+                () -> medicoService.bajaMedico(1L)
+        );
+    }
+
 
 
 
