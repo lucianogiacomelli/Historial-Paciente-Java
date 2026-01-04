@@ -109,7 +109,8 @@ class PacienteServiceTest {
         updatePacienteDTO.setDireccion("Av. Siempre Viva 742");
 
         when(pacienteRepository.findById(1L)).thenReturn(Optional.of(paciente));
-        when(pacienteRepository.save(any(Paciente.class))).thenReturn(paciente);
+        // Cambio: usar thenAnswer para devolver el mismo objeto que se está guardando
+        when(pacienteRepository.save(any(Paciente.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         // Act
         Paciente resultado = pacienteService.modificarPaciente(updatePacienteDTO, 1L);
@@ -118,28 +119,35 @@ class PacienteServiceTest {
         assertNotNull(resultado);
         verify(pacienteRepository, times(1)).findById(1L);
         verify(pacienteRepository, times(1)).save(paciente);
-        assertEquals("María", paciente.getNombre());
-        assertEquals("González", paciente.getApellido());
-        assertEquals("Femenino", paciente.getGenero());
+        assertEquals("María", resultado.getNombre());
+        assertEquals("González", resultado.getApellido());
+        assertEquals(Genero.FEMENINO, resultado.getGenero());
+        assertEquals("987654321", resultado.getNumero());
+        assertEquals("maria@example.com", resultado.getEmail());
+        assertEquals("Av. Siempre Viva 742", resultado.getDireccion());
     }
 
     @Test
     void modificarPaciente_CuandoSoloModificaAlgunosCampos_DeberiaMantenerLosOtros() {
         // Arrange
+        String apellidoOriginal = paciente.getApellido();
+        Genero generoOriginal = paciente.getGenero();
+
         updatePacienteDTO.setNombre("Carlos");
         updatePacienteDTO.setEmail("carlos@example.com");
 
         when(pacienteRepository.findById(1L)).thenReturn(Optional.of(paciente));
-        when(pacienteRepository.save(any(Paciente.class))).thenReturn(paciente);
+        when(pacienteRepository.save(any(Paciente.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         // Act
         Paciente resultado = pacienteService.modificarPaciente(updatePacienteDTO, 1L);
 
         // Assert
         assertNotNull(resultado);
-        assertEquals("Carlos", paciente.getNombre());
-        assertEquals("carlos@example.com", paciente.getEmail());
-        assertEquals("Pérez", paciente.getApellido()); // No debería cambiar
+        assertEquals("Carlos", resultado.getNombre());
+        assertEquals("carlos@example.com", resultado.getEmail());
+        assertEquals(apellidoOriginal, resultado.getApellido()); // No debería cambiar
+        assertEquals(generoOriginal, resultado.getGenero()); // No debería cambiar
         verify(pacienteRepository, times(1)).save(paciente);
     }
 
