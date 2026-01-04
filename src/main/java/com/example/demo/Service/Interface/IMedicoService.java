@@ -10,12 +10,12 @@ import java.util.List;
 @Service
 public interface IMedicoService {
     List<Medico> getAllMedicos();
-    Medico getMedicoById(Long id) throws Exception;
+    Medico getMedicoById(Long id);
 
-    Medico altaMedico(MedicoDTO medicoDTO) throws Exception;
-    Medico modificarMedico(Long id, UpdateMedicoDTO medicoDTO) throws Exception;
+    Medico altaMedico(MedicoDTO medicoDTO);
+    Medico modificarMedico(Long id, UpdateMedicoDTO medicoDTO);
 
-    boolean bajaMedico (Long id) throws Exception;
-    boolean habilitarMedico(Long id) throws Exception;
+    boolean bajaMedico (Long id) ;
+    boolean habilitarMedico(Long id) ;
 
 }

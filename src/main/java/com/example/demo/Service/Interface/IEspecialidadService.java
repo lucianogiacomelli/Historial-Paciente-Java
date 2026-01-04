@@ -6,5 +6,5 @@ import org.springframework.stereotype.Service;
 
 @Service
 public interface IEspecialidadService {
-    Especialidad altaEspecialidad(EspecialidadDTO especialidadDTO) throws Exception;
+    Especialidad altaEspecialidad(EspecialidadDTO especialidadDTO);
 }

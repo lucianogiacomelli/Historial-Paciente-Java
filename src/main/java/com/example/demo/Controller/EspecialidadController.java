@@ -29,15 +29,10 @@ public class EspecialidadController {
     @PreAuthorize("hasAuthority('administrador')")
     @PostMapping("/admin/alta-especialidades")
     public ResponseEntity<?> altaEspecialidad(@Valid @RequestBody EspecialidadDTO especialidadDTO) throws Exception{
-        try{
             Especialidad especialidad = especialidadService.altaEspecialidad(especialidadDTO);
             EspecialidadResponseDTO response = EspecialidadMapper.toDTO(especialidad);
             logger.info("Especialidad creada: id={}", response.getId());
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
-
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error inesperado en creación de medico: "+ e.getMessage());
-        }
     }
 
 }

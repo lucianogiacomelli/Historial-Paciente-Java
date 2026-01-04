@@ -31,38 +31,26 @@ public class MedicoController {
     // GETTERS
     //======================================
 
-    @GetMapping("/public/ping")
-    public String ping() {
-        return "pong";
-    }
 
 
     @PreAuthorize("hasAuthority('administrador')")
     @GetMapping("/admin/get-all-medicos")
     public ResponseEntity<?> getAllMedicos(){
-        try{
             List<Medico> medicos = medicoService.getAllMedicos();
             List<MedicoResponseDTO> response = medicos.stream()
                     .map(MedicoMapper::toDTO)
                     .toList();
             logger.info("Se obtuvieron {} medicos", medicos.size());
             return ResponseEntity.status(HttpStatus.OK).body(response);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error inesperado en obtención de todos los médicos: "+ e.getMessage());
-        }
     }
 
     @PreAuthorize("hasAuthority('administrador')")
     @GetMapping("/admin/get-medico/{id}")
     public ResponseEntity<?> getMedicoById(@PathVariable Long id) {
-        try {
             Medico medico = medicoService.getMedicoById(id);
             MedicoResponseDTO response = MedicoMapper.toDTO(medico);
             logger.info("Medico econtrado con id ={" + id + "}");
             return ResponseEntity.status(HttpStatus.OK).body(response);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error inesperado al querer encontrar el médico con id = {" + id + "} " + e.getMessage());
-        }
     }
 
 
@@ -73,15 +61,12 @@ public class MedicoController {
     @PreAuthorize("hasAuthority('administrador')")
     @PostMapping("/admin/alta-medico")
     public ResponseEntity<?> altaMedico(@Valid @RequestBody MedicoDTO medicoDTO) throws Exception{
-        try{
             Medico medico = medicoService.altaMedico(medicoDTO);
             MedicoResponseDTO response = MedicoMapper.toDTO(medico);
             logger.info("Medico creado: id={}", medico.getId());
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
 
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error inesperado en creación de medico: "+ e.getMessage());
-        }
+
     }
 
 
@@ -91,14 +76,11 @@ public class MedicoController {
     @PreAuthorize("hasAuthority('administrador')")
     @PutMapping("/admin/modificar-medico/{id}")
     public ResponseEntity<?> modificarMedico(@Valid @RequestBody UpdateMedicoDTO medicoDTO, @PathVariable Long id) {
-        try {
             Medico medicoModificado = medicoService.modificarMedico(id, medicoDTO);
             MedicoResponseDTO response = MedicoMapper.toDTO(medicoModificado);
             logger.info("Medico modificado con id ={" + id + "}");
             return ResponseEntity.status(HttpStatus.OK).body(response);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error inesperado al querer modificar el médico con id = {" + id + "} " + e.getMessage());
-        }
+
     }
 
     //======================================
@@ -107,36 +89,20 @@ public class MedicoController {
     @PreAuthorize("hasAuthority('administrador')")
     @DeleteMapping("/admin/baja-medico/{id}")
     public ResponseEntity<?> bajaMedico (@PathVariable Long id) {
-        try{
             medicoService.bajaMedico(id);
             logger.info("Medico eliminado con id ={" + id + "}");
             MedicoResponseDTO response = MedicoMapper.toDTO((medicoService.getMedicoById(id)));
             return ResponseEntity.status(HttpStatus.OK).body(response);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error inesperado al querer eliminar el médico con id = {" + id + "} " + e.getMessage());
-        }
     }
 
     @PreAuthorize("hasAuthority('administrador')")
     @PutMapping("/admin/habilitar-medico/{id}")
     public ResponseEntity<?> habilitarMedico (@PathVariable Long id) {
-        try {
             medicoService.habilitarMedico(id);
             logger.info("Medico habilitado con id ={" + id + "}");
             MedicoResponseDTO response = MedicoMapper.toDTO(medicoService.getMedicoById(id));
             return ResponseEntity.status(HttpStatus.OK).body(response);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error inesperado al querer habilitar al médico con id = {" + id + "} " + e.getMessage());
-        }
+
     }
-
-
-
-
-
-
-
-
-
 
 }

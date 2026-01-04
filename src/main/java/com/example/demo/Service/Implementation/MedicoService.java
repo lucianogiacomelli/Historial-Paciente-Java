@@ -5,11 +5,16 @@ import com.example.demo.DTOs.Request.MedicoDTO;
 import com.example.demo.DTOs.Request.UpdateMedicoDTO;
 import com.example.demo.Entities.Especialidad;
 import com.example.demo.Entities.Medico;
+import com.example.demo.Exception.Auth0OperationException;
+import com.example.demo.Exception.Especialidad.EspecialidadNotFoundException;
+import com.example.demo.Exception.Medico.MedicoDuplicadoException;
+import com.example.demo.Exception.Medico.MedicoNotFoundException;
 import com.example.demo.Repository.EspecialidadRepository;
 import com.example.demo.Repository.MedicoRepository;
 import com.example.demo.Service.Interface.IMedicoService;
 import com.example.demo.Service.auth0.Auth0Service;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -46,10 +51,10 @@ public class MedicoService implements IMedicoService {
     }
 
     @Override
-    public Medico getMedicoById(Long id) throws Exception{
+    public Medico getMedicoById(Long id){
         Optional<Medico> medicoOptional = medicoRepository.findById(id);
         if(medicoOptional.isEmpty()){
-            throw new Exception("El medico con id: " + id +" no existe");
+            throw new MedicoNotFoundException(id);
         }
         return medicoOptional.get();
     }
@@ -57,11 +62,12 @@ public class MedicoService implements IMedicoService {
     //======================================
     // ABM MEDICO
     //======================================
+    @Transactional
     @Override
-    public Medico altaMedico(MedicoDTO medicoDTO) throws Exception {
+    public Medico altaMedico(MedicoDTO medicoDTO) {
        Optional<Medico> medicoOptional = medicoRepository.findByMatriculaAndDni(medicoDTO.getMatricula(), medicoDTO.getDni());
         if(medicoOptional.isPresent()){
-            throw new Exception("El medico ya se encuentra registrado en el sistema");
+            throw new MedicoDuplicadoException("El medico ya se encuentra registrado en el sistema");
         }
         List<Especialidad> especialidades = validarEspecialidades(medicoDTO.getEspecialidadDTOList());
 
@@ -79,7 +85,7 @@ public class MedicoService implements IMedicoService {
     }
 
     @Override
-    public Medico modificarMedico(Long id, UpdateMedicoDTO medicoDTO) throws Exception {
+    public Medico modificarMedico(Long id, UpdateMedicoDTO medicoDTO) {
         Medico medico = getMedicoById(id);
         if (medicoDTO.getNombre() != null) {
             medico.setNombre(medicoDTO.getNombre());
@@ -102,12 +108,13 @@ public class MedicoService implements IMedicoService {
                 // MANEJO DE CUENTA Y ESTADO DE MEDICO
                 //======================================
     @Override
-    public boolean bajaMedico(Long id) throws Exception {
+    @Transactional
+    public boolean bajaMedico(Long id)  {
         Medico medico = getMedicoById(id);
         try {
             auth0Service.eliminarUsuario(medico.getAuth0Id());
         } catch (Exception e) {
-            throw new Exception("No se pudo eliminar al médico en Auth0: " + e.getMessage());
+            throw new Auth0OperationException("No se pudo eliminar al médico en Auth0: " + e.getMessage());
         }
         medico.setEstado(false);
         medico.setFechaBaja(LocalDateTime.now());
@@ -117,12 +124,13 @@ public class MedicoService implements IMedicoService {
     }
 
     @Override
-    public boolean habilitarMedico(Long id) throws Exception {
+    @Transactional
+    public boolean habilitarMedico(Long id) {
         Medico medico = getMedicoById(id);
         try {
             auth0Service.habilitarUsuario(medico.getAuth0Id());
         } catch (Exception e) {
-            throw new Exception("No se pudo habilitar al médico en Auth0: " + e.getMessage());
+            throw new Auth0OperationException("No se pudo habilitar al médico en Auth0: " + e.getMessage());
         }
         medico.setEstado(true);
         medico.setFechaBaja(null);
@@ -134,11 +142,11 @@ public class MedicoService implements IMedicoService {
     // MÉTODOS AUXILIARES
     //======================================
 
-    private List <Especialidad> validarEspecialidades(List <Long> especialidadesIds) throws Exception {
+    private List <Especialidad> validarEspecialidades(List <Long> especialidadesIds)  {
         List <Especialidad> especialidadList = new ArrayList<>();
        for (Long id : especialidadesIds) {
            Especialidad especialidad = especialidadRepository.findById(id)
-                   .orElseThrow(() -> new Exception("La especialidad con id: " + id + " no existe"));
+                   .orElseThrow(() -> new EspecialidadNotFoundException("La especialidad con id: " + id + " no existe"));
            especialidadList.add(especialidad);
        }
         return especialidadList;

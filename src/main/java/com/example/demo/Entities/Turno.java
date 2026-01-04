@@ -19,8 +19,6 @@ import java.util.List;
 @Table(name = "Turno")
 public class Turno extends Base{
     private LocalDateTime horario;
-    private String motivo;
-
 
     @ManyToOne
     private Paciente paciente;

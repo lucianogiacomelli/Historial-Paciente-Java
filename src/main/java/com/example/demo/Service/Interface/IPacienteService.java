@@ -8,12 +8,12 @@ import org.springframework.stereotype.Service;
 @Service
 public interface IPacienteService {
 
-    Paciente altaPaciente(PacienteDTO pacienteDTO) throws Exception;
+    Paciente altaPaciente(PacienteDTO pacienteDTO) ;
 
-    Paciente modificarPaciente(UpdatePacienteDTO pacienteDTO, Long id) throws Exception;
+    Paciente modificarPaciente(UpdatePacienteDTO pacienteDTO, Long id);
 
-    void bajaPaciente(Long id) throws Exception;
+    void bajaPaciente(Long id) ;
 
-    Paciente habilitarPaciente(Long id) throws Exception;
+    Paciente habilitarPaciente(Long id) ;
 
 }
