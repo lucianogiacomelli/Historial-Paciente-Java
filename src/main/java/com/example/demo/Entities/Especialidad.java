@@ -16,5 +16,6 @@ import lombok.Setter;
 public class Especialidad extends Base{
 
     private String nombre;
+    private Integer duracionConsulta; // Duración en minutos
 
 }

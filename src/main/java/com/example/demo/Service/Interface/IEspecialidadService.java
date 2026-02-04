@@ -17,4 +17,6 @@ public interface IEspecialidadService {
     List<Especialidad> getAllEspecialidades();
 
     Especialidad altaEspecialidadDadaDeBaja(Long idEspecialidad);
+
+    Especialidad modificarEspecialidad(Long idEspecialidad, EspecialidadDTO especialidadDTO);
 }

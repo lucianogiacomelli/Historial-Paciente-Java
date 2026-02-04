@@ -16,4 +16,5 @@ public class TurnoDTO {
     private LocalDateTime horario;
     private Long idPaciente;
     private Long idMedico;
+    private Long idEspecialidad;
 }

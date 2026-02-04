@@ -32,8 +32,32 @@ public class EspecialidadService implements IEspecialidadService {
 
         Especialidad especialidad = new Especialidad();
         especialidad.setNombre(especialidadDTO.getNombre());
+        especialidad.setDuracionConsulta(especialidadDTO.getDuracionTurno());
 
         return especialidadRepository.save(especialidad);
+    }
+
+    @Transactional
+    @Override
+    public Especialidad modificarEspecialidad(Long idEspecialidad, EspecialidadDTO especialidadDTO) {
+        Optional <Especialidad> especialidadOptional = especialidadRepository.findById(idEspecialidad);
+        if (especialidadOptional.isEmpty()){
+            throw new EspecialidadNotFoundException("La especialidad con id: "+ idEspecialidad +" no se ha encontrado.");
+        }
+        Especialidad especialidad = especialidadOptional.get();
+
+        if(especialidad.getEstado() == false){
+            throw new EspecialidadInvalidaException("La especialidad con id: "+idEspecialidad+" se encuentra dada de baja.");
+        }
+
+        if (especialidadDTO.getDuracionTurno() != null){
+            especialidad.setDuracionConsulta(especialidadDTO.getDuracionTurno());
+        }
+        if(especialidadDTO.getNombre() != null){
+            especialidad.setNombre(especialidadDTO.getNombre());
+        }
+        return especialidadRepository.save(especialidad);
+
     }
 
     @Transactional

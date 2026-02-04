@@ -35,6 +35,15 @@ public class EspecialidadController {
     }
 
     @PreAuthorize("hasAuthority('administrador')")
+    @PatchMapping("/admin/modificar-especialidades/{idEspecialidad}")
+    public ResponseEntity<?> modificarEspecialidad(@Valid @RequestBody EspecialidadDTO especialidadDTO, @PathVariable Long idEspecialidad){
+        Especialidad especialidad = especialidadService.modificarEspecialidad(idEspecialidad, especialidadDTO);
+        EspecialidadResponseDTO response = EspecialidadMapper.toDTO(especialidad);
+        logger.info("Especialidad modificada: id={}", response.getId());
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @PreAuthorize("hasAuthority('administrador')")
     @PutMapping("/admin/alta-especialidades/{idEspecialidad}")
     public ResponseEntity<?> altaEspecialidadDadaDeBaja(@PathVariable Long idEspecialidad){
         Especialidad especialidad = especialidadService.altaEspecialidadDadaDeBaja(idEspecialidad);

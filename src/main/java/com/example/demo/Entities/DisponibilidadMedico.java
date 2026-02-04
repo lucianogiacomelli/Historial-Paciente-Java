@@ -25,5 +25,4 @@ public class DisponibilidadMedico extends Base{
     private LocalTime horaInicio;
     private LocalTime horaFin;
 
-    private Integer duracionTurno;
 }
