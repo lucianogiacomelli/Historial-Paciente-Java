@@ -8,4 +8,5 @@ import java.util.Optional;
 public interface EspecialidadRepository extends BaseRepository<Especialidad, Long> {
     Optional<Especialidad> findAllById(Long id);
     Optional<Especialidad> findByNombre(String nombre);
+    List<Especialidad> findByEstadoTrue();
 }

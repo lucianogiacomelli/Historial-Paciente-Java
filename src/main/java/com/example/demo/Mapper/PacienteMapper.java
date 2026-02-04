@@ -6,6 +6,7 @@ public class PacienteMapper {
     public static PacienteResponseDTO toDTO(Paciente paciente) {
         return new PacienteResponseDTO(
                 paciente.getId(),
+                paciente.getEstado(),
                 paciente.getNombre(),
                 paciente.getApellido(),
                 paciente.getDni(),

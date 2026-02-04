@@ -8,6 +8,7 @@ import com.example.demo.Entities.Medico;
 import com.example.demo.Exception.Auth0OperationException;
 import com.example.demo.Exception.Especialidad.EspecialidadNotFoundException;
 import com.example.demo.Exception.Medico.MedicoDuplicadoException;
+import com.example.demo.Exception.Medico.MedicoInvalidoException;
 import com.example.demo.Exception.Medico.MedicoNotFoundException;
 import com.example.demo.Repository.EspecialidadRepository;
 import com.example.demo.Repository.MedicoRepository;
@@ -62,31 +63,57 @@ public class MedicoService implements IMedicoService {
     //======================================
     // ABM MEDICO
     //======================================
-    @Transactional
     @Override
     public Medico altaMedico(MedicoDTO medicoDTO) {
-       Optional<Medico> medicoOptional = medicoRepository.findByMatriculaAndDni(medicoDTO.getMatricula(), medicoDTO.getDni());
-        if(medicoOptional.isPresent()){
-            throw new MedicoDuplicadoException("El medico ya se encuentra registrado en el sistema");
-        }
-        List<Especialidad> especialidades = validarEspecialidades(medicoDTO.getEspecialidadDTOList());
 
-        String auth0_id = auth0Service.crearUsuario(medicoDTO.getEmail(), medicoDTO.getPassword());
-        auth0Service.asignarRolAUsuario(auth0_id, auth0Properties.getRoleMedico());
+        Optional<Medico> medicoOptional =
+                medicoRepository.findByMatriculaAndDni(
+                        medicoDTO.getMatricula(), medicoDTO.getDni());
+
+        if (medicoOptional.isPresent()) {
+            throw new MedicoDuplicadoException(
+                    "El medico ya se encuentra registrado en el sistema");
+        }
+
+        List<Especialidad> especialidades =
+                validarEspecialidades(medicoDTO.getEspecialidadDTOList());
+
+        // 🔥 Auth0 ANTES o DESPUÉS, pero FUERA de @Transactional
+        String auth0Id = auth0Service.crearUsuario(
+                medicoDTO.getEmail(), medicoDTO.getPassword());
+
+        auth0Service.asignarRolAUsuario(
+                auth0Id, auth0Properties.getRoleMedico());
+
+        return guardarMedico(medicoDTO, auth0Id, especialidades);
+    }
+
+    @Transactional
+    public Medico guardarMedico(
+            MedicoDTO dto,
+            String auth0Id,
+            List<Especialidad> especialidades) {
+
         Medico medico = new Medico();
-        medico.setNombre(medicoDTO.getNombre());
-        medico.setApellido(medicoDTO.getApellido());
-        medico.setDni(medicoDTO.getDni());
-        medico.setMatricula(medicoDTO.getMatricula());
-        medico.setEmail(medicoDTO.getEmail());
-        medico.setAuth0Id(auth0_id);
+        medico.setNombre(dto.getNombre());
+        medico.setApellido(dto.getApellido());
+        medico.setTelefono(dto.getTelefono());
+        medico.setDni(dto.getDni());
+        medico.setMatricula(dto.getMatricula());
+        medico.setEmail(dto.getEmail());
+        medico.setAuth0Id(auth0Id);
         medico.setEspecialidades(especialidades);
+
         return medicoRepository.save(medico);
     }
 
+    @Transactional
     @Override
     public Medico modificarMedico(Long id, UpdateMedicoDTO medicoDTO) {
         Medico medico = getMedicoById(id);
+        if(medico.getEstado() == false) {
+            throw new MedicoInvalidoException("No se puede modificar un médico dado de baja.");
+        }
         if (medicoDTO.getNombre() != null) {
             medico.setNombre(medicoDTO.getNombre());
         }
@@ -97,10 +124,13 @@ public class MedicoService implements IMedicoService {
             medico.setTelefono(medicoDTO.getTelefono());
         }
         //Se podría mejorar con un MapStruct, pero quiero dejar toda la lógica aca y no depender de librerías externas
-        if (medicoDTO.getEspecialidadDTOList().size() > 0){
-            List <Especialidad> especialidades = validarEspecialidades(medicoDTO.getEspecialidadDTOList());
+        if (medicoDTO.getEspecialidadDTOList() != null
+                && !medicoDTO.getEspecialidadDTOList().isEmpty()) {
+            List<Especialidad> especialidades =
+                    validarEspecialidades(medicoDTO.getEspecialidadDTOList());
             medico.setEspecialidades(especialidades);
         }
+
         return medicoRepository.save(medico);
     }
 
@@ -111,6 +141,9 @@ public class MedicoService implements IMedicoService {
     @Transactional
     public boolean bajaMedico(Long id)  {
         Medico medico = getMedicoById(id);
+        if (medico.getEstado() == false) {
+            throw new MedicoInvalidoException("El médico ya se encuentra dado de baja.");
+        }
         try {
             auth0Service.eliminarUsuario(medico.getAuth0Id());
         } catch (Exception e) {
@@ -127,6 +160,9 @@ public class MedicoService implements IMedicoService {
     @Transactional
     public boolean habilitarMedico(Long id) {
         Medico medico = getMedicoById(id);
+        if (medico.getEstado() == true) {
+            throw new MedicoInvalidoException("El médico ya se encuentra dado de alta.");
+        }
         try {
             auth0Service.habilitarUsuario(medico.getAuth0Id());
         } catch (Exception e) {

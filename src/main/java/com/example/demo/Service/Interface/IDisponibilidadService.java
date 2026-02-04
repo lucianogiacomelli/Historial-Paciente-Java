@@ -9,4 +9,10 @@ import java.util.List;
 @Service
 public interface IDisponibilidadService {
     List<DisponibilidadMedico> altaDisponibilidad(List<DisponibilidadDTO> disponibilidadDTO, Long idMedico);
+
+    List<DisponibilidadMedico> getDisponibilidadesByMedicoId(Long idMedico);
+
+    void bajaDisponibilidad(Long idDisponibilidad, Long idMedico);
+
+
 }

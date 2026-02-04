@@ -5,6 +5,8 @@ import com.example.demo.DTOs.Request.UpdatePacienteDTO;
 import com.example.demo.Entities.Paciente;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public interface IPacienteService {
 
@@ -15,5 +17,11 @@ public interface IPacienteService {
     void bajaPaciente(Long id) ;
 
     Paciente habilitarPaciente(Long id) ;
+
+    List<Paciente> getAllPacientes();
+
+    List<Paciente> getPacientesActivos();
+
+    Paciente getPacienteById(Long id);
 
 }

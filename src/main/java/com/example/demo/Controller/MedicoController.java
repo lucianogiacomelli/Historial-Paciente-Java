@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/medicos")
 public class MedicoController {
 
     private static final Logger logger = LoggerFactory.getLogger(MedicoController.class);

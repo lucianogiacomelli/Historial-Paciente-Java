@@ -17,6 +17,7 @@ public class Paciente extends Base{
 
     private String nombre;
     private String apellido;
+    @Column(unique = true)
     private String dni;
     private LocalDate fechaNacimiento;
     @Enumerated(EnumType.STRING)

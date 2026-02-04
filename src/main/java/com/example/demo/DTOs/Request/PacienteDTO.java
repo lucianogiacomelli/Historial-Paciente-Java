@@ -23,6 +23,7 @@ public class PacienteDTO {
     private String apellido;
 
     @NotBlank(message = "El DNI no puede estar vacío")
+
     @Pattern(regexp = "\\d{7,8}", message = "El DNI debe tener entre 7 y 8 dígitos numéricos")
     private String dni;
 

@@ -6,6 +6,6 @@ import org.springframework.stereotype.Service;
 
 @Service
 public interface ITurnoService {
-    Turno altaTurno(TurnoDTO turnoDTO) throws Exception;
+  Turno altaTurno(TurnoDTO turnoDTO) throws Exception;
 
 }
