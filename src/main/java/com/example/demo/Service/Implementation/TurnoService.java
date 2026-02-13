@@ -123,8 +123,11 @@ public class TurnoService implements ITurnoService {
 
     @Override
     public Turno getTurnoById(Long turnoId){
-        Turno turno = turnoRepository.getById(turnoId);
-        return turno;
+        Optional <Turno> turnoOpt = turnoRepository.findById(turnoId);
+        if(turnoOpt.isEmpty()){
+            throw new ResourceNotFoundException("El turno con id: {"+turnoId+"} no existe.");
+        }
+        return turnoOpt.get();
     }
 
 

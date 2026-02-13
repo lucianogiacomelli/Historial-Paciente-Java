@@ -54,7 +54,7 @@ public class TurnoController {
     }
 
     @PreAuthorize("hasAnyAuthority('recepcionista','administrador')")
-    @GetMapping("/get-turno/{id}")
+    @GetMapping("/get-turno/{turnoId}")
     public ResponseEntity<?> getTurnoById(@PathVariable Long turnoId){
         Turno turno = turnoService.getTurnoById(turnoId);
         TurnoResponseDTO response = TurnoMapper.toResponse(turno);
