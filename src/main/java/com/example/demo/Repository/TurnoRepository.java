@@ -1,5 +1,6 @@
 package com.example.demo.Repository;
 
+import com.example.demo.Entities.EstadoTurno.EstadoTurno;
 import com.example.demo.Entities.Turno;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -28,6 +29,20 @@ public interface TurnoRepository extends BaseRepository<Turno, Long> {
             @Param("horaInicio") LocalTime horaInicio,
             @Param("horaFin") LocalTime horaFin
     );
+
+    @Query("""
+    SELECT t FROM Turno t
+    WHERE t.medico.id = :medicoId
+    AND t.estadoTurno IN :estados
+    ORDER BY t.fecha ASC, t.horarioInicio ASC
+""")
+    List<Turno> obtenerTurnosActivos(
+            @Param("medicoId") Long medicoId,
+            @Param("estados") List<EstadoTurno> estados
+    );
+
+
+
 
 
     //Optional<Turno> findByMedicoIdAndPacienteIdAndHorario(Long medicoId, Long pacienteId, LocalDateTime horario);

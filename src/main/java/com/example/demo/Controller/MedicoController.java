@@ -4,8 +4,11 @@ package com.example.demo.Controller;
 import com.example.demo.DTOs.Request.MedicoDTO;
 import com.example.demo.DTOs.Request.UpdateMedicoDTO;
 import com.example.demo.DTOs.Response.MedicoResponseDTO;
+import com.example.demo.DTOs.Response.TurnoResponseDTO;
 import com.example.demo.Entities.Medico;
+import com.example.demo.Entities.Turno;
 import com.example.demo.Mapper.MedicoMapper;
+import com.example.demo.Mapper.TurnoMapper;
 import com.example.demo.Service.Interface.IMedicoService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
@@ -45,13 +48,24 @@ public class MedicoController {
     }
 
     @PreAuthorize("hasAuthority('administrador')")
-    @GetMapping("/admin/get-medico/{id}")
-    public ResponseEntity<?> getMedicoById(@PathVariable Long id) {
-            Medico medico = medicoService.getMedicoById(id);
+    @GetMapping("/admin/get-medico/{medicoId}")
+    public ResponseEntity<?> getMedicoById(@PathVariable Long medicoId) {
+            Medico medico = medicoService.getMedicoById(medicoId);
             MedicoResponseDTO response = MedicoMapper.toDTO(medico);
-            logger.info("Medico econtrado con id ={" + id + "}");
+            logger.info("Medico encontrado con id ={" + medicoId + "}");
             return ResponseEntity.status(HttpStatus.OK).body(response);
     }
+
+    @PreAuthorize("hasAnyAuthority('administrador','medico')")
+    @GetMapping("/admin/get-turnos-by-medico/{medicoId}")
+    public ResponseEntity<?> getTurnosActivosByMedico(@PathVariable Long medicoId) {
+         List<Turno> turnos = medicoService.getTurnosByMedico(medicoId);
+        List<TurnoResponseDTO> response = turnos.stream()
+                .map(TurnoMapper::toResponse).toList();
+        logger.info("Se han encontrado " + response.size() + " turnos para el médico con id: "+medicoId );
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
 
 
     //======================================

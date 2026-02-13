@@ -37,8 +37,8 @@ public class Turno extends Base{
     @ManyToOne
     private Especialidad especialidad;
 
-    @Enumerated
-    private EstadoTurno estadoTurno;
+    @Enumerated(EnumType.STRING)
+    private EstadoTurno estadoTurno; //estado actual
 
 
     public TurnoEstado getUltimoEstado() {

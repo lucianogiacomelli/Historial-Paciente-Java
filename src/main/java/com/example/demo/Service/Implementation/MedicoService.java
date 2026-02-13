@@ -4,14 +4,18 @@ import com.example.demo.Configuration.Auth0.Auth0Properties;
 import com.example.demo.DTOs.Request.MedicoDTO;
 import com.example.demo.DTOs.Request.UpdateMedicoDTO;
 import com.example.demo.Entities.Especialidad;
+import com.example.demo.Entities.EstadoTurno.EstadoTurno;
 import com.example.demo.Entities.Medico;
+import com.example.demo.Entities.Turno;
 import com.example.demo.Exception.Auth0OperationException;
 import com.example.demo.Exception.Especialidad.EspecialidadNotFoundException;
 import com.example.demo.Exception.Medico.MedicoDuplicadoException;
 import com.example.demo.Exception.Medico.MedicoInvalidoException;
 import com.example.demo.Exception.Medico.MedicoNotFoundException;
+import com.example.demo.Exception.ResourceNotFoundException;
 import com.example.demo.Repository.EspecialidadRepository;
 import com.example.demo.Repository.MedicoRepository;
+import com.example.demo.Repository.TurnoRepository;
 import com.example.demo.Service.Interface.IMedicoService;
 import com.example.demo.Service.auth0.Auth0Service;
 import org.springframework.stereotype.Service;
@@ -26,15 +30,18 @@ import java.util.Optional;
 public class MedicoService implements IMedicoService {
 
     private MedicoRepository medicoRepository;
+    private TurnoRepository turnoRepository;
     private Auth0Service auth0Service;
     private Auth0Properties auth0Properties;
     private EspecialidadRepository especialidadRepository;
 
 
     public MedicoService(MedicoRepository medicoRepository,
+                         TurnoRepository turnoRepository,
                          Auth0Service auth0Service,
                          Auth0Properties auth0Properties,
                          EspecialidadRepository especialidadRepository) {
+        this.turnoRepository = turnoRepository;
         this.medicoRepository = medicoRepository;
         this.auth0Service = auth0Service;
         this.especialidadRepository = especialidadRepository;
@@ -58,6 +65,20 @@ public class MedicoService implements IMedicoService {
             throw new MedicoNotFoundException(id);
         }
         return medicoOptional.get();
+    }
+
+    @Override
+    public List<Turno> getTurnosByMedico(Long medicoId){
+        Medico medico = getMedicoById(medicoId);
+        if(!medico.getEstado()){
+            throw new MedicoInvalidoException("El médico con ID:{"+medico.getId()+"} se encuentra dado de baja.");
+        }
+
+        List <Turno> turnos = turnoRepository.obtenerTurnosActivos(medicoId, List.of(EstadoTurno.CONFIRMADO, EstadoTurno.PENDIENTE));
+        if(turnos.isEmpty()){
+            throw new ResourceNotFoundException("El médico "+medico.getNombre()+" "+medico.getApellido()+" no tiene turnos en estado Pendiente ni Confirmado");
+        }
+        return turnos;
     }
 
     //======================================
