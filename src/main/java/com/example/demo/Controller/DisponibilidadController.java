@@ -31,15 +31,22 @@ public class DisponibilidadController {
     public ResponseEntity<?> altaDisponibilidad(@Valid @RequestBody List<DisponibilidadDTO> disponibilidadDTO, @PathVariable Long idMedico) {
         List<DisponibilidadMedico> disponibilidadMedico =
                 disponibilidadService.altaDisponibilidad(disponibilidadDTO, idMedico);
-
-        List<DisponibilidadResponseDTO> responseDTOS = DisponibilidadMapper.toDTO(disponibilidadMedico);
-
+        List<DisponibilidadResponseDTO> responseDTOS = disponibilidadMedico.stream().map(DisponibilidadMapper::toDTO).toList();
         logger.info("Disponibilidades creadas para el médico con id={}", idMedico);
-
-
-
         return ResponseEntity
                 .status(HttpStatus.CREATED)
+                .body(responseDTOS);
+    }
+
+    @PreAuthorize("hasAnyAuthority('administrador','medico','recepcionista')")
+    @PutMapping("/{idMedico}/modificar-disponibilidad/{idDisponibilidad}")
+    public ResponseEntity<?> modificarDisponibilidad(@Valid @RequestBody DisponibilidadDTO disponibilidadDTO, @PathVariable Long idMedico, @PathVariable Long idDisponibilidad) {
+        DisponibilidadMedico disponibilidadMedico =
+                disponibilidadService.modificarDisponibilidad(disponibilidadDTO, idMedico, idDisponibilidad);
+        DisponibilidadResponseDTO responseDTOS = DisponibilidadMapper.toDTO(disponibilidadMedico);
+        logger.info("Disponibilidad modificada para el médico con id={}", idMedico);
+        return ResponseEntity
+                .status(HttpStatus.OK)
                 .body(responseDTOS);
     }
 
@@ -47,24 +54,15 @@ public class DisponibilidadController {
     @DeleteMapping("/{idMedico}/baja-disponibilidad/{idDisponibilidad}")
     public ResponseEntity<?> bajaDisponibilidad(@PathVariable Long idDisponibilidad, @PathVariable Long idMedico) {
         disponibilidadService.bajaDisponibilidad(idDisponibilidad, idMedico);
-
-        logger.info(
-                "Disponibilidad eliminada con id={} para el médico con id={}",
-                idDisponibilidad,
-                idMedico
-        );
-
-
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body("Disponibilidad eliminada correctamente");
+        logger.info("Disponibilidad eliminada con id={} para el médico con id={}", idDisponibilidad, idMedico);
+        return ResponseEntity.status(HttpStatus.OK).body("Disponibilidad eliminada correctamente");
     }
 
     @PreAuthorize("hasAnyAuthority('administrador','medico','recepcionista')")
     @GetMapping("/{idMedico}/get-disponibilidad")
     public ResponseEntity<?> getDisponibilidad(@PathVariable Long idMedico) {
         List <DisponibilidadMedico> disponibilidadMedico = disponibilidadService.getDisponibilidadesByMedicoId(idMedico);
-        List <DisponibilidadResponseDTO> responseDTOS = DisponibilidadMapper.toDTO(disponibilidadMedico);
+        List<DisponibilidadResponseDTO> responseDTOS = disponibilidadMedico.stream().map(DisponibilidadMapper::toDTO).toList();
         logger.info("Disponibilidades encontradas para el médico con id={}", idMedico);
         return ResponseEntity
                 .status(HttpStatus.OK)

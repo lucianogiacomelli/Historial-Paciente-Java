@@ -7,18 +7,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DisponibilidadMapper {
-    public static List<DisponibilidadResponseDTO> toDTO(List<DisponibilidadMedico> disponibilidad) {
-
-        return disponibilidad.stream()
-                .map(
-                disponibilidadMedico -> DisponibilidadResponseDTO.builder()
-                        .id(disponibilidadMedico.getId())
-                        .diaSemana(disponibilidadMedico.getDiaSemana())
-                        .horaInicio(disponibilidadMedico.getHoraInicio())
-                        .horaFin(disponibilidadMedico.getHoraFin())
-                        .medicoId(disponibilidadMedico.getMedico().getId())
-                        .build()
-                ).toList();
-
+    public static DisponibilidadResponseDTO toDTO(DisponibilidadMedico disponibilidadMedico) {
+        return new DisponibilidadResponseDTO(
+                disponibilidadMedico.getId(),
+                disponibilidadMedico.getDiaSemana(),
+                disponibilidadMedico.getHoraInicio(),
+                disponibilidadMedico.getHoraFin(),
+                disponibilidadMedico.getMedico().getId(),
+                disponibilidadMedico.getMedico().getNombre()+" "+disponibilidadMedico.getMedico().getApellido(),
+                disponibilidadMedico.getEspecialidad().getId(),
+                disponibilidadMedico.getEspecialidad().getNombre(),
+                disponibilidadMedico.getEspecialidad().getDuracionConsulta()
+        );
     }
 }

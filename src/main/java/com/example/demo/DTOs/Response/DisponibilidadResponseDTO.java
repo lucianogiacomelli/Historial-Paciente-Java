@@ -17,7 +17,9 @@ public class DisponibilidadResponseDTO {
     private LocalTime horaInicio;
     private LocalTime horaFin;
     private Long medicoId;
-
-
+    private String nombreMedico;
+    private Long especialidadId;
+    private String especialidadNombre;
+    private Integer duracionTurno;
 
 }

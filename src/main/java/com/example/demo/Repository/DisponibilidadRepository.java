@@ -2,6 +2,7 @@ package com.example.demo.Repository;
 
 import com.example.demo.Entities.Dias;
 import com.example.demo.Entities.DisponibilidadMedico;
+import com.example.demo.Entities.Medico;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -21,4 +22,5 @@ public interface DisponibilidadRepository extends BaseRepository<DisponibilidadM
 
     Optional<DisponibilidadMedico> findByIdAndMedicoId(Long idDisponibilidad, Long idMedico);
 
+    Optional<DisponibilidadMedico> findByMedicoAndDiaSemana(Medico medico, Dias diaSemana);
 }

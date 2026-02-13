@@ -4,8 +4,22 @@ import com.example.demo.DTOs.Request.TurnoDTO;
 import com.example.demo.Entities.Turno;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public interface ITurnoService {
-  Turno altaTurno(TurnoDTO turnoDTO) throws Exception;
+  Turno altaTurno(TurnoDTO turnoDTO);
+
+  List<Turno> getAllTurnos();
+
+  List<Turno> getTurnosActivos();
+
+  Turno getTurnoById(Long turnoId);
+
+  Turno confirmarTurno(Long turnoId);
+
+  Turno cancelarTurno(Long turnoId);
+
+  Turno atenderTurno(Long turnoId);
 
 }

@@ -25,4 +25,7 @@ public class DisponibilidadMedico extends Base{
     private LocalTime horaInicio;
     private LocalTime horaFin;
 
+    @ManyToOne
+    private Especialidad especialidad;
+
 }
