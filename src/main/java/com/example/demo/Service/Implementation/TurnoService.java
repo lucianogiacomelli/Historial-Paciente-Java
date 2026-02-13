@@ -12,6 +12,8 @@ import com.example.demo.Repository.*;
 import com.example.demo.Service.Interface.ITurnoService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
@@ -154,6 +156,8 @@ public class TurnoService implements ITurnoService {
             throw new ResourceInvalidException("El turno con id: "+turno.getId()+" se encuentra dado de baja o estado cancelado.");
         }
         canceladoEstadoTurno(turno);
+        turno.setEstado(false);
+        turno.setFechaBaja(LocalDateTime.now());
         return turnoRepository.save(turno);
     }
 
