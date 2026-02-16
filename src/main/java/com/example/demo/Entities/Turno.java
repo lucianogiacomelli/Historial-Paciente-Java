@@ -28,8 +28,7 @@ public class Turno extends Base{
     private Paciente paciente;
     @ManyToOne
     private Medico medico;
-    @OneToOne
-    @JoinColumn(name = "consulta_id")
+    @OneToOne(mappedBy = "turno", cascade = CascadeType.ALL)
     private ConsultaMedica consulta;
     @OrderBy("fecha ASC")
     @OneToMany(mappedBy = "turno", cascade = CascadeType.ALL, orphanRemoval = true)

@@ -1,10 +1,14 @@
 package com.example.demo.Controller;
 
 
+import com.example.demo.DTOs.Request.ConsultaMedicaDTO;
 import com.example.demo.DTOs.Request.TurnoDTO;
 
+import com.example.demo.DTOs.Response.ConsultaMedicaResponseDTO;
 import com.example.demo.DTOs.Response.TurnoResponseDTO;
+import com.example.demo.Entities.ConsultaMedica;
 import com.example.demo.Entities.Turno;
+import com.example.demo.Mapper.ConsultaMedicaMapper;
 import com.example.demo.Mapper.TurnoMapper;
 import com.example.demo.Service.Interface.ITurnoService;
 import jakarta.validation.Valid;
@@ -34,6 +38,16 @@ public class TurnoController {
         logger.info("Se dio de alta al turno con id: {}", turno.getId());
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
+
+    @PreAuthorize("hasAnyAuthority('medico','administrador')")
+    @PostMapping("/alta-consulta/{turnoId}")
+    public ResponseEntity<?> altaConsulta(@Valid @RequestBody ConsultaMedicaDTO ConsultaMedicaDTO, @PathVariable Long turnoId){
+        ConsultaMedica consulta = turnoService.altaConsulta(ConsultaMedicaDTO, turnoId);
+        ConsultaMedicaResponseDTO response = ConsultaMedicaMapper.toDTO(consulta);
+        logger.info("Se dio de alta la consulta con id: {}", consulta.getId());
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
 
     @PreAuthorize("hasAnyAuthority('recepcionista','administrador')")
     @GetMapping("/get-all-turno")

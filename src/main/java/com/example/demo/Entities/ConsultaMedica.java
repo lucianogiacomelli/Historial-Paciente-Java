@@ -28,6 +28,10 @@ public class ConsultaMedica extends Base {
     private String observaciones;
     @OneToMany(mappedBy = "consulta", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Tratamiento> tratamientoList = new ArrayList<>();
+    @OneToOne
+    @JoinColumn(name = "turno_id", nullable = false)
+    private Turno turno;
+
 
 
 }
