@@ -1,5 +1,6 @@
 package com.example.demo.Controller;
 
+import com.example.demo.DTOs.Request.TratamientoDTO;
 import com.example.demo.DTOs.Response.ConsultaMedicaResponseDTO;
 import com.example.demo.Entities.ConsultaMedica;
 import com.example.demo.Mapper.ConsultaMedicaMapper;
@@ -24,7 +25,7 @@ public class ConsultaMedicaController {
     private static final Logger logger = LoggerFactory.getLogger(ConsultaMedicaController.class);
 
     @PreAuthorize("hasAnyAuthority('administrador','medico')")
-    @PostMapping("/{idPaciente}/get-historial")
+    @GetMapping("/{idPaciente}/get-historial")
     public ResponseEntity<?> getHistorialPaciente (@PathVariable Long idPaciente) {
         List<ConsultaMedica> consultaMedicas =
                 consultaMedicaService.getHistorialPaciente(idPaciente);
@@ -36,11 +37,22 @@ public class ConsultaMedicaController {
     }
 
     @PreAuthorize("hasAnyAuthority('administrador','medico')")
-    @PostMapping("/get-consulta/{idConsulta}")
+    @GetMapping("/get-consulta/{idConsulta}")
     public ResponseEntity<?> getConsulta (@PathVariable Long idConsulta) {
         ConsultaMedica consultaMedica = consultaMedicaService.getConsulta(idConsulta);
         ConsultaMedicaResponseDTO responseDTO = ConsultaMedicaMapper.toDTO(consultaMedica);
         logger.info("Se ha encontrado la consulta con id {} para el paciente con id = {}", idConsulta, consultaMedica.getTurno().getPaciente().getId());
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(responseDTO);
+    }
+
+    @PreAuthorize("hasAnyAuthority('administrador','medico')")
+    @PostMapping("/agregar-tratamiento/{idConsulta}")
+    public ResponseEntity<?> getConsulta (@Valid @RequestBody List <TratamientoDTO> tratamientoDTOList, @PathVariable Long idConsulta) {
+        ConsultaMedica consultaMedica = consultaMedicaService.agregarTratamientos(idConsulta, tratamientoDTOList);
+        ConsultaMedicaResponseDTO responseDTO = ConsultaMedicaMapper.toDTO(consultaMedica);
+        logger.info("Se han agregado {} tratamientos a la consulta con id: {}", tratamientoDTOList.size(), idConsulta);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(responseDTO);

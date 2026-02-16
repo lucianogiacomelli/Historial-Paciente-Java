@@ -1,5 +1,6 @@
 package com.example.demo.Service.Implementation;
 
+import com.example.demo.DTOs.Request.TratamientoDTO;
 import com.example.demo.Entities.ConsultaMedica;
 import com.example.demo.Entities.EstadoTurno.EstadoTurno;
 import com.example.demo.Entities.Paciente;
@@ -55,4 +56,35 @@ public class ConsultaMedicaService implements IConsultaMedicaService {
         }
         return consultaMedicaOpt.get();
     }
+
+    @Transactional
+    @Override
+    public ConsultaMedica agregarTratamientos(Long idConsulta, List<TratamientoDTO> tratamientoDTOList){
+        ConsultaMedica consultaMedica = getConsulta(idConsulta);
+        tratamientoDTOList.stream().forEach(tratamientoDTO -> {
+
+            boolean existe = consultaMedica.getTratamientoList().stream()
+                    .anyMatch(t ->
+                            t.getDescripcion().equalsIgnoreCase(tratamientoDTO.getDescripcion())
+                    );
+
+            if (existe) {
+                throw new IllegalStateException(
+                        "El tratamiento '" + tratamientoDTO.getDescripcion() + "' ya fue agregado a esta consulta."
+                );
+            }
+
+            Tratamiento tratamiento = new Tratamiento();
+            tratamiento.setConsulta(consultaMedica);
+            tratamiento.setDuracionDias(tratamientoDTO.getDuracionDias());
+            tratamiento.setDosis(tratamientoDTO.getDosis());
+            tratamiento.setDescripcion(tratamientoDTO.getDescripcion());
+            tratamiento.setIndicaciones(tratamientoDTO.getIndicaciones());
+            consultaMedica.getTratamientoList().add(tratamiento);
+        });
+        consultaMedicaRepository.save(consultaMedica);
+        return consultaMedica;
+    }
+
+
 }

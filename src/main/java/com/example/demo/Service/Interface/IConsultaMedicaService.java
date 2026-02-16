@@ -1,5 +1,6 @@
 package com.example.demo.Service.Interface;
 
+import com.example.demo.DTOs.Request.TratamientoDTO;
 import com.example.demo.Entities.ConsultaMedica;
 import org.springframework.stereotype.Service;
 
@@ -9,4 +10,5 @@ import java.util.List;
 public interface IConsultaMedicaService {
     List<ConsultaMedica> getHistorialPaciente (Long pacienteId);
     ConsultaMedica getConsulta (Long idConsulta);
+    ConsultaMedica agregarTratamientos(Long idConsulta, List<TratamientoDTO> tratamientoDTOList);
 }
