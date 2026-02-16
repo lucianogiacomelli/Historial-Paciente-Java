@@ -42,11 +42,13 @@ public interface TurnoRepository extends BaseRepository<Turno, Long> {
     );
 
     @Query("""
-            SELECT t
-            FROM Turno t
-            WHERE t.paciente.id =: pacienteId AND t.estadoTurno =: estado
-            ORDER BY t.fecha ASC, t.horaInicio ASC""")
-    List <Turno> obtenerHistorialTurnos(@Param("pacienteId") Long pacienteId, @Param("estado") EstadoTurno estado);
+        SELECT t FROM Turno t WHERE t.paciente.id = :pacienteId AND t.estadoTurno = :estado ORDER BY t.fecha ASC, t.horarioInicio ASC
+        """)
+    List<Turno> obtenerHistorialTurnos(
+            @Param("pacienteId") Long pacienteId,
+            @Param("estado") EstadoTurno estado
+    );
+
 
 
 
