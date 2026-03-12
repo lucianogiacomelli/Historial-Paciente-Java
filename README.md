@@ -6,7 +6,7 @@ Este proyecto es un **MVP de gestión de historial médico**, desarrollado en **
 ---
 
 ## Tecnologías utilizadas
-- Java 17
+- Java 21
 - Spring Boot 4
 - Spring Data JPA
 - PostgreSQL 17
