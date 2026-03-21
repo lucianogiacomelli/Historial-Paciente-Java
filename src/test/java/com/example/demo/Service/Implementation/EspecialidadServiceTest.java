@@ -57,7 +57,8 @@ class EspecialidadServiceTest {
     @Test
     void altaEspecialidad_duplicada_lanza_excepcion() {
         // Arrange
-        EspecialidadDTO dto = new EspecialidadDTO("Cardiología");
+        EspecialidadDTO dto = new EspecialidadDTO();
+        dto.setNombre("Cardiología");
 
         Especialidad especialidadExistente = new Especialidad();
         especialidadExistente.setId(1L);
