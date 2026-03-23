@@ -17,13 +17,13 @@ import lombok.Setter;
 @Table(name = "Tratamiento")
 public class Tratamiento extends Base {
 
-    private String tratamiento;
-    private String dosis;
-    private String frecuencia;
-    private Integer duracionDias;
-    private String instrucciones;
+    private String descripcion;       // Qué es
+    private String dosis;             // Cantidad
+    private String frecuencia;        // Cada cuánto
+    private Integer duracionDias;     // Cuántos días
+    private String indicaciones;      // Observaciones adicionales
 
     @ManyToOne
-    @JoinColumn(name = "consulta_id")
+    @JoinColumn(name = "consulta_id", nullable = false)
     private ConsultaMedica consulta;
 }

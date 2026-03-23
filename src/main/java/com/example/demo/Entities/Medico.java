@@ -26,6 +26,8 @@ public class Medico extends Base{
     private String dni;
     @Column(name = "auth0_user_id", unique = true, nullable = false)
     private String auth0Id;
+    @OneToMany(mappedBy = "medico", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<DisponibilidadMedico> disponibilidad = new ArrayList<>();
     @ManyToMany
     @JoinTable(
             name = "medico_especialidad",

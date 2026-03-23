@@ -8,7 +8,10 @@ public class EspecialidadMapper {
     public static EspecialidadResponseDTO toDTO(Especialidad especialidad) {
         return new EspecialidadResponseDTO(
                 especialidad.getId(),
-                especialidad.getNombre()
+                especialidad.getEstado(),
+                especialidad.getNombre(),
+                especialidad.getDuracionConsulta()
+
         );
     }
 }

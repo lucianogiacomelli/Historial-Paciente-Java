@@ -3,11 +3,16 @@ package com.example.demo.Service.Implementation;
 import com.example.demo.DTOs.Request.PacienteDTO;
 import com.example.demo.DTOs.Request.UpdatePacienteDTO;
 import com.example.demo.Entities.Paciente;
+import com.example.demo.Exception.ResourceInvalidException;
+import com.example.demo.Exception.ResourceNotFoundException;
+import com.example.demo.Exception.ResourceAlreadyExistsException;
 import com.example.demo.Repository.PacienteRepository;
 import com.example.demo.Service.Interface.IPacienteService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -20,12 +25,14 @@ public class PacienteService implements IPacienteService {
         this.pacienteRepository = pacienteRepository;
     }
 
+    @Transactional
     @Override
-    public Paciente altaPaciente(PacienteDTO pacienteDTO) throws Exception {
+    public Paciente altaPaciente(PacienteDTO pacienteDTO) {
         Optional<Paciente> pacienteOptional = pacienteRepository.findByDni(pacienteDTO.getDni());
         if(pacienteOptional.isPresent()){
-            throw new Exception("El paciente con dni: " + pacienteDTO.getDni() + " ya existe");
+            throw new ResourceAlreadyExistsException("El paciente con dni: " + pacienteDTO.getDni() + " ya existe");
         }
+
         Paciente paciente = new Paciente();
         paciente.setNombre(pacienteDTO.getNombre());
         paciente.setApellido(pacienteDTO.getApellido());
@@ -38,14 +45,19 @@ public class PacienteService implements IPacienteService {
         return pacienteRepository.save(paciente);
     }
 
+    @Transactional
     @Override
-    public Paciente modificarPaciente(UpdatePacienteDTO pacienteDTO, Long id) throws Exception {
+    public Paciente modificarPaciente(UpdatePacienteDTO pacienteDTO, Long id) {
         Optional <Paciente> pacienteOptional = pacienteRepository.findById(id);
         if(pacienteOptional.isEmpty()) {
-            throw new Exception("El paciente con id: " + id + " no existe");
+            throw new ResourceNotFoundException("El paciente con id: " + id + " no existe");
         }
 
         Paciente paciente = pacienteOptional.get();
+        if (paciente.getEstado() == false) {
+            throw new ResourceInvalidException("El paciente con id: " + id + " se encuentra dado de baja y no puede ser modificado");
+        }
+
         if (pacienteDTO.getNombre() != null) {
             paciente.setNombre(pacienteDTO.getNombre());
         }
@@ -68,27 +80,57 @@ public class PacienteService implements IPacienteService {
 
     }
 
+    @Transactional
     @Override
-    public void bajaPaciente(Long id) throws Exception {
+    public void bajaPaciente(Long id) {
         Optional <Paciente> pacienteOptional = pacienteRepository.findById(id);
         if(pacienteOptional.isEmpty()){
-            throw new Exception("El paciente con id: {"+id+"} no existe");
+            throw new ResourceNotFoundException("El paciente con id: {"+id+"} no existe");
         }
         Paciente paciente = pacienteOptional.get();
+        if (paciente.getEstado() == false) {
+            throw new ResourceInvalidException("El paciente con id: " + id + " se encuentra dado de baja.");
+        }
         paciente.setEstado(false);
         paciente.setFechaBaja(LocalDateTime.now());
         pacienteRepository.save(paciente);
     }
 
+    @Transactional
     @Override
-    public Paciente habilitarPaciente(Long id) throws Exception {
+    public Paciente habilitarPaciente(Long id)  {
         Optional <Paciente> pacienteOptional = pacienteRepository.findById(id);
         if(pacienteOptional.isEmpty()){
-            throw new Exception("El paciente con id: {"+id+"} no existe");
+            throw new ResourceNotFoundException("El paciente con id: {"+id+"} no existe");
         }
         Paciente paciente = pacienteOptional.get();
+        if (paciente.getEstado() == true) {
+            throw new ResourceInvalidException("El paciente con id: " + id + " se encuentra dado de alta.");
+        }
         paciente.setEstado(true);
         paciente.setFechaBaja(null);
         return pacienteRepository.save(paciente);
+    }
+
+    @Override
+    public List<Paciente> getAllPacientes() {
+        List <Paciente> pacientes = pacienteRepository.findAll();
+        return pacientes;
+    }
+
+    @Override
+    public List<Paciente> getPacientesActivos () {
+        List <Paciente> pacientes = pacienteRepository.findByEstadoTrue();
+        return pacientes;
+    }
+
+    @Override
+    public Paciente getPacienteById (Long id) {
+        Optional <Paciente> pacienteOptional = pacienteRepository.findById(id);
+        if(pacienteOptional.isEmpty()){
+            throw new ResourceNotFoundException("El paciente con id: "+id+" no existe");
+        }
+        Paciente paciente = pacienteOptional.get();
+        return paciente;
     }
 }

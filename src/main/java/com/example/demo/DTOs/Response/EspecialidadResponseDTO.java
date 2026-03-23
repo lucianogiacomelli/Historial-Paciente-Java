@@ -8,5 +8,7 @@ import lombok.Data;
 @AllArgsConstructor
 public class EspecialidadResponseDTO {
     private Long id;
+    private Boolean estado;
     private String nombre;
+    private Integer duracionTurno;
 }

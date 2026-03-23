@@ -16,6 +16,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/pacientes")
 public class PacienteController {
@@ -28,51 +30,68 @@ public class PacienteController {
     @PreAuthorize("hasAnyAuthority('administrador', 'medico')")
     @PostMapping("/alta-paciente")
     public ResponseEntity<?> altaPaciente(@Valid @RequestBody PacienteDTO pacienteDTO){
-        try{
             Paciente paciente = pacienteService.altaPaciente(pacienteDTO);
             PacienteResponseDTO response = PacienteMapper.toDTO(paciente);
             logger.info("Se dio de alta al paciente con dni: {}", paciente.getDni());
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error inesperado al querer dar de alta a un paciente" + e.getMessage());
-        }
     }
 
     @PreAuthorize("hasAnyAuthority('administrador', 'medico')")
     @PutMapping("/modificar-paciente/{id}")
-    public ResponseEntity<?> modificarPaciente(@Valid @RequestBody UpdatePacienteDTO updatePacienteDTO, @RequestParam Long id){
-        try{
+    public ResponseEntity<?> modificarPaciente(@Valid @RequestBody UpdatePacienteDTO updatePacienteDTO, @PathVariable Long id){
             Paciente paciente = pacienteService.modificarPaciente(updatePacienteDTO, id);
             PacienteResponseDTO response = PacienteMapper.toDTO(paciente);
             logger.info("Se modificó al paciente con id: {}", id);
             return ResponseEntity.status(HttpStatus.OK).body(response);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error inesperado al querer modificar a un paciente con id:{" + id + "}" + e.getMessage());
-        }
+
     }
 
     @PreAuthorize("hasAnyAuthority('administrador', 'medico')")
     @DeleteMapping("/baja-paciente/{id}")
     public ResponseEntity<?> bajaPaciente(@PathVariable Long id){
-        try{
             pacienteService.bajaPaciente(id);
             logger.info("Se dio de baja al paciente con id: {}", id);
             return ResponseEntity.status(HttpStatus.OK).body("Se dio de baja al paciente con id: " + id);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error inesperado al querer dar de baja a un paciente con id:{" + id + "}" + e.getMessage());
-        }
+
     }
 
     @PreAuthorize("hasAnyAuthority('administrador', 'medico')")
     @PutMapping("/habilitar-paciente/{id}")
     public ResponseEntity<?> habilitarPaciente(@PathVariable Long id){
-        try{
             Paciente paciente = pacienteService.habilitarPaciente(id);
             logger.info("Se habilitó nuevamente al paciente con id: {}", id);
             PacienteResponseDTO response = PacienteMapper.toDTO(paciente);
             return ResponseEntity.status(HttpStatus.OK).body(response);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error inesperado al querer re-habilitar a un paciente con id:{" + id + "}" + e.getMessage());
-        }
+    }
+
+    @PreAuthorize("hasAnyAuthority('administrador', 'medico')")
+    @GetMapping("/get-all-pacientes")
+    public ResponseEntity<?> getAllPacientes(){
+        List<Paciente> pacientes = pacienteService.getAllPacientes();
+        List<PacienteResponseDTO> response = pacientes.stream()
+                .map(PacienteMapper::toDTO)
+                .toList();
+        logger.info("Se han encontrado : {} de cantidad de pacientes.", response.size());
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @PreAuthorize("hasAnyAuthority('administrador', 'medico')")
+    @GetMapping("/get-all-pacientes-activos")
+    public ResponseEntity<?> getAllPacientesActivos(){
+        List<Paciente> pacientes = pacienteService.getPacientesActivos();
+        List<PacienteResponseDTO> response = pacientes.stream()
+                .map(PacienteMapper::toDTO)
+                .toList();
+        logger.info("Se han encontrado : {} de cantidad de pacientes activos.", response.size());
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @PreAuthorize("hasAnyAuthority('administrador', 'medico')")
+    @GetMapping("/get-paciente/{idPaciente}")
+    public ResponseEntity<?> getPacienteById( @PathVariable Long idPaciente){
+        Paciente paciente = pacienteService.getPacienteById(idPaciente);
+        PacienteResponseDTO response = PacienteMapper.toDTO(paciente);
+        logger.info("Se ha encontrado al paciente con id: {} .", idPaciente);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 }
